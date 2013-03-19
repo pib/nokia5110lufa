@@ -5,7 +5,6 @@
   dean [at] fourwalledcubicle [dot] com
            www.lufa-lib.org
 */
-#include "SerialToLCD.h"
 
 /*
   Copyright 2013  Dean Camera (dean [at] fourwalledcubicle [dot] com)
@@ -36,6 +35,7 @@
  *  the project and is responsible for the initial application hardware configuration.
  */
 
+#include "SerialToNokia.h"
 
 /** Circular buffer to hold data from the host before it is sent to the LCD */
 static RingBuffer_t FromHost_Buffer;
@@ -73,6 +73,7 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 			},
 	};
 
+u8g_t u8g;
 
 /** Main program entry point. This routine contains the overall program flow, including initial
  *  setup of all components and the main program loop.
@@ -100,12 +101,13 @@ int main(void)
 		while (RingBuffer_GetCount(&FromHost_Buffer) > 0)
 		{
 			static uint8_t EscapePending = 0;
-			int16_t HD44780Byte = RingBuffer_Remove(&FromHost_Buffer);
+			int16_t LCDByte = RingBuffer_Remove(&FromHost_Buffer);
 			
-			if (HD44780Byte == COMMAND_ESCAPE)
+			if (LCDByte == COMMAND_ESCAPE)
 			{
 				if (EscapePending)
 				{
+				  //HD44780_WriteData(LCDByte);
 					EscapePending = 0;
 				}
 				else
@@ -118,10 +120,12 @@ int main(void)
 			{
 				if (EscapePending)
 				{
+				  //HD44780_WriteCommand(LCDByte);
 					EscapePending = 0;
 				}
 				else
 				{
+				  //HD44780_WriteData(HD44780Byte);
 				}
 			}
 		}
@@ -144,7 +148,10 @@ void SetupHardware(void)
 	/* Hardware Initialization */
 	USB_Init();
 
-	/* Power up the HD44780 Interface */
+	/* Power up the LCD Interface */
+	/* SCK PD1, MOSI PD2, CS PD3, A0 PD4, RESET PD5 */
+	u8g_InitSPI(&u8g, &u8g_dev_pcd8544_84x48_sw_spi, PN(4, 1), PN(4, 2),
+		    PN(4, 3), PN(4, 4), PN(4, 5));
 	
 	/* Start the flush timer so that overflows occur rapidly to push received bytes to the USB interface */
 	TCCR0B = (1 << CS02);

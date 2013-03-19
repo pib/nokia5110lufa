@@ -18,10 +18,15 @@ F_CPU        = 16000000
 F_USB        = $(F_CPU)
 OPTIMIZATION = s
 TARGET       = SerialToNokia
-SRC          = $(TARGET).c Descriptors.c Lib/*.c $(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS)
+SRC          = $(TARGET).c Descriptors.c $(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS) \
+               Lib/u8g_com_io.c Lib/u8g_ll_api.c Lib/u8g_com_api.c \
+               Lib/u8g_dev_pcd8544_84x48.c Lib/u8g_com_atmega_sw_spi.c \
+               Lib/u8g_pb.c Lib/u8g_pb8v1.c Lib/u8g_font.c Lib/u8g_state.c \
+               Lib/u8g_delay.c Lib/u8g_page.c
 LUFA_PATH    = ../../LUFA
-CC_FLAGS     = -DUSE_LUFA_CONFIG_HEADER -IConfig/ -ILib/
-LD_FLAGS     =
+
+CC_FLAGS     = -DUSE_LUFA_CONFIG_HEADER -IConfig/
+LD_FLAGS     = 
 
 # Default target
 all:

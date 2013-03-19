@@ -38,12 +38,12 @@
 #define _SERIALTOLCD_H_
 
     /* Includes: */
-	#include "u8g.h"
         #include <avr/io.h>
         #include <avr/wdt.h>
         #include <avr/interrupt.h>
         #include <avr/power.h>
 
+	#include "Lib/u8g.h"
         #include "Descriptors.h"
 
         #include <LUFA/Version.h>
